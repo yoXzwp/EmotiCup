@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmotiCup – Artisan Coffee House</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #faf7f4;
+      --fg: #1e1208;
+      --muted: #6b5c4e;
+      --card: #f5f0eb;
+      --border: #e0d5c9;
+      --accent: #a05c2c;
+      --accent-light: #f0e6d8;
+      --primary: #2e1a0e;
+      --primary-fg: #faf7f4;
+      --radius: 10px;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', serif; line-height: 1.15; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,247,244,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1200px; margin: auto; padding: 0 24px; height: 68px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--fg); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo svg { color: var(--accent); }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; text-decoration: none; color: var(--muted); transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .mobile-menu { display: none; flex-direction: column; gap: 16px; padding: 20px 24px; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .mobile-menu a { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; text-decoration: none; color: var(--muted); }
+    .mobile-menu.open { display: flex; }
+    @media(max-width:768px){ .nav-links{display:none;} .hamburger{display:block;} }
+    .page { display: none; }
+    .page.active { display: block; }
+    .hero { min-height: 90vh; display: flex; align-items: center; background: linear-gradient(135deg, #f0e6d8 0%, var(--bg) 60%, #ede5da 100%); padding-top: 68px; }
+    .hero-inner { max-width: 1200px; margin: auto; padding: 60px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .hero-badge { font-size: .7rem; text-transform: uppercase; letter-spacing: .3em; color: var(--accent); margin-bottom: 16px; display: block; }
+    .hero h1 { font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 700; margin-bottom: 20px; }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p { font-size: 1.05rem; color: var(--muted); max-width: 420px; margin-bottom: 36px; }
+    .btn-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 32px; border-radius: var(--radius); font-size: .9rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all .2s; border: none; font-family: 'Inter', sans-serif; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: #8a4e26; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--fg); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    @media(max-width:768px){ .hero-inner{grid-template-columns:1fr;} }
+    .photo { background: var(--card); border: 2px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #b0a090; font-size: .8rem; letter-spacing: .15em; }
+    .photo svg { opacity: .4; }
+    .photo-square { aspect-ratio: 1/1; }
+    .photo-video { aspect-ratio: 16/9; }
+    .photo-portrait { aspect-ratio: 4/5; }
+    .photo-43 { aspect-ratio: 4/3; }
+    .strip { background: var(--primary); color: var(--primary-fg); padding: 64px 24px; }
+    .strip-inner { max-width: 1200px; margin: auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 40px; }
+    .strip-item { display: flex; align-items: flex-start; gap: 16px; }
+    .strip-icon { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .strip-item h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
+    .strip-item p { font-size: .83rem; opacity: .75; }
+    @media(max-width:768px){ .strip-inner{grid-template-columns:1fr;} }
+    .section { padding: 80px 24px; }
+    .section-inner { max-width: 1200px; margin: auto; }
+    .section-muted { background: var(--card); }
+    .section-primary { background: var(--primary); color: var(--primary-fg); }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-badge { font-size: .7rem; text-transform: uppercase; letter-spacing: .3em; color: var(--accent); display: block; margin-bottom: 10px; }
+    .section-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px; }
+    .section-header p { color: var(--muted); max-width: 440px; margin: auto; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 60px; align-items: center; }
+    .grid-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    @media(max-width:900px){ .grid-3{grid-template-columns:repeat(2,1fr);} .grid-cards{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .grid-3{grid-template-columns:1fr;} .grid-2{grid-template-columns:1fr;} .grid-cards{grid-template-columns:1fr;} }
+    .cta { text-align: center; }
+    .cta h2 { font-size: clamp(1.8rem,3vw,2.5rem); margin-bottom: 16px; }
+    .cta p { color: var(--muted); max-width: 400px; margin: 0 auto 32px; }
+    .about-text p { color: var(--muted); font-size: .95rem; line-height: 1.8; margin-bottom: 14px; }
+    .about-text h2 { font-size: 2rem; margin-bottom: 24px; }
+    .about-text h2 em { font-style: italic; color: var(--accent); }
+    .values-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; text-align: center; }
+    .values-grid h3 { font-size: 1.1rem; margin-bottom: 10px; }
+    .values-grid p { font-size: .83rem; opacity: .78; }
+    @media(max-width:768px){ .values-grid{grid-template-columns:1fr;} }
+    .tab-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 24px; border-radius: 999px; border: 1.5px solid var(--border); background: transparent; font-family: 'Inter', sans-serif; font-size: .83rem; cursor: pointer; color: var(--muted); transition: all .2s; }
+    .tab-btn.active { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    @media(max-width:900px){ .tab-panel.active{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .tab-panel.active{grid-template-columns:1fr;} }
+    .menu-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .menu-card-body { padding: 18px; }
+    .menu-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+    .menu-card-top h3 { font-size: 1rem; }
+    .menu-price { color: var(--accent); font-weight: 600; font-family: 'Playfair Display', serif; white-space: nowrap; }
+    .menu-desc { font-size: .82rem; color: var(--muted); }
+    .service-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
+    .service-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .service-icon svg { color: var(--accent); }
+    .service-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+    .service-card p { font-size: .83rem; color: var(--muted); line-height: 1.7; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+    @media(max-width:768px){ .contact-grid{grid-template-columns:1fr;} }
+    .info-item { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+    .info-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .info-icon svg { color: var(--accent); }
+    .info-label { font-size: .78rem; color: var(--muted); }
+    .info-val { font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 600; }
+    .contact-form { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px; }
+    .contact-form h2 { font-size: 1.6rem; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: .82rem; margin-bottom: 6px; color: var(--muted); }
+    .form-group input, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); font-family: 'Inter', sans-serif; font-size: .9rem; color: var(--fg); transition: border-color .2s; outline: none; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .success-box { text-align: center; padding: 40px 20px; }
+    .success-box svg { color: var(--accent); margin-bottom: 16px; }
+    .success-box h3 { font-size: 1.6rem; margin-bottom: 10px; }
+    .success-box p { color: var(--muted); font-size: .9rem; }
+    footer { background: var(--primary); color: var(--primary-fg); padding: 64px 24px 32px; }
+    .footer-inner { max-width: 1200px; margin: auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .footer-brand p { font-size: .83rem; opacity: .75; line-height: 1.6; }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 16px; }
+    .footer-col a { display: block; font-size: .83rem; opacity: .7; text-decoration: none; color: var(--primary-fg); margin-bottom: 8px; transition: opacity .2s; }
+    .footer-col a:hover { opacity: 1; }
+    .footer-contact-item { display: flex; align-items: center; gap: 10px; font-size: .83rem; opacity: .75; margin-bottom: 10px; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.15); margin-top: 48px; padding-top: 24px; text-align: center; font-size: .75rem; opacity: .5; }
+    @media(max-width:768px){ .footer-inner{grid-template-columns:1fr;} }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .overlay.open { display: flex; }
+    .modal { background: var(--bg); border-radius: 14px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; padding: 36px; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--muted); line-height: 1; }
+    .modal h2 { font-size: 1.7rem; margin-bottom: 6px; }
+    .modal-sub { font-size: .85rem; color: var(--muted); margin-bottom: 24px; }
+    .order-row { background: var(--card); border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .order-field { display: flex; flex-direction: column; gap: 4px; }
+    .order-field label { font-size: .72rem; color: var(--muted); }
+    .order-field select { padding: 7px 10px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--bg); font-family: 'Inter', sans-serif; font-size: .85rem; color: var(--fg); cursor: pointer; }
+    .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--bg); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; color: var(--fg); }
+    .remove-btn { font-size: .75rem; color: #c0392b; background: none; border: none; cursor: pointer; padding: 0 4px; }
+    .add-drink-btn { background: none; border: 1.5px dashed var(--border); border-radius: 8px; padding: 8px 16px; font-size: .8rem; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color .2s; }
+    .add-drink-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .order-total { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border); margin-top: 16px; }
+    .total-label { font-size: .83rem; color: var(--muted); }
+    .total-price { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+    .success-modal { text-align: center; padding: 20px 0; }
+    .success-modal svg { color: var(--accent); margin-bottom: 16px; }
+    .success-modal h3 { font-size: 1.6rem; margin-bottom: 10px; }
+    .success-modal p { color: var(--muted); margin-bottom: 24px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:480px){ .two-col{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#" onclick="navigate('home')">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
+      EmotiCup
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" onclick="navigate('home')" id="nav-home" class="active">Home</a></li>
+      <li><a href="#" onclick="navigate('about')" id="nav-about">About</a></li>
+      <li><a href="#" onclick="navigate('menu')" id="nav-menu">Menu</a></li>
+      <li><a href="#" onclick="navigate('services')" id="nav-services">Services</a></li>
+      <li><a href="#" onclick="navigate('contact')" id="nav-contact">Contact</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMobile()" aria-label="Menu">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" onclick="navigate('home');closeMobile()">Home</a>
+    <a href="#" onclick="navigate('about');closeMobile()">About</a>
+    <a href="#" onclick="navigate('menu');closeMobile()">Menu</a>
+    <a href="#" onclick="navigate('services');closeMobile()">Services</a>
+    <a href="#" onclick="navigate('contact');closeMobile()">Contact</a>
+  </div>
+</nav>
+
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="hero-badge">Artisan Coffee House</span>
+        <h1>Where Every<br><em>Emotion</em><br>Meets a Cup</h1>
+        <p>Experience the art of coffee at EmotiCup. Hand-crafted beverages that speak to your soul, served in a space designed for connection.</p>
+        <div class="btn-row">
+          <button class="btn btn-accent" onclick="openOrder()">Order Now &#8594;</button>
+          <button class="btn btn-outline" onclick="navigate('menu')">View Menu</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:320px;">
+        <img src="https://media.base44.com/images/public/69d7ddcfebfbe1beed1a5b38/86fd0e2f7_logo.jpg" alt="EmotiCup Logo" style="width:100%;max-width:480px;height:auto;object-fit:contain;" />
+      </div>
+    </div>
+  </section>
+  <div class="strip">
+    <div class="strip-inner">
+      <div class="strip-item">
+        <div class="strip-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div><h3>Premium Beans</h3><p>Sourced from the finest estates worldwide</p></div>
+      </div>
+      <div class="strip-item">
+        <div class="strip-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><h3>Fresh Daily</h3><p>Roasted in small batches every morning</p></div>
+      </div>
+      <div class="strip-item">
+        <div class="strip-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div><h3>Made with Love</h3><p>Every cup crafted with passion and care</p></div>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Our Space</h2>
+        <p>A warm, inviting atmosphere designed for comfort and inspiration.</p>
+      </div>
+      <div class="grid-2" style="grid-template-columns:repeat(2,1fr);gap:24px;align-items:start;">
+        <div style="border-radius:10px;overflow:hidden;">
+          <img src="https://media.base44.com/images/public/69d7ddcfebfbe1beed1a5b38/5aa3901a3_WhatsAppImage2026-04-09at200902.jpeg" alt="Our Space" style="width:100%;height:280px;object-fit:cover;display:block;border-radius:10px;" />
+        </div>
+        <div style="border-radius:10px;overflow:hidden;">
+          <img src="https://media.base44.com/images/public/69d7ddcfebfbe1beed1a5b38/24ba9bcda_WhatsAppImage2026-04-09at200903.jpg" alt="Our Space" style="width:100%;height:280px;object-fit:cover;display:block;border-radius:10px;" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section section-muted">
+    <div class="section-inner cta">
+      <h2>Ready for Your Cup?</h2>
+      <p>Skip the line. Order ahead and pick up your favorite drink, freshly made.</p>
+      <button class="btn btn-accent" onclick="openOrder()">Order Now &#8594;</button>
+    </div>
+  </section>
+</div>
+
+<div id="page-about" class="page">
+  <section class="section section-muted" style="padding-top:120px;">
+    <div class="section-inner section-header">
+      <span class="section-badge">Our Story</span>
+      <h1>About EmotiCup</h1>
+      <p>More than a coffee shop — a place where emotions flow as freely as our espresso.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="grid-2">
+        <div class="photo photo-portrait" style="min-height:360px;">
+          <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          PHOTOHERE
+        </div>
+        <div class="about-text">
+          <h2>Born from Passion,<br><em>Brewed with Heart</em></h2>
+          <p>EmotiCup was founded with a simple belief: that the best coffee does more than wake you up — it moves you. Every cup we serve carries the warmth of human connection and the care of artisan craftsmanship.</p>
+          <p>From sourcing the finest single-origin beans to perfecting our roasting process, we obsess over every detail. Our baristas are trained not just in technique, but in the art of creating moments that matter.</p>
+          <p>Whether you're here for a quiet morning ritual or a lively afternoon with friends, EmotiCup is your space to feel, connect, and savor life's simplest pleasures.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section section-primary">
+    <div class="section-inner">
+      <div class="section-header" style="margin-bottom:48px;">
+        <h2 style="color:var(--primary-fg)">What We Stand For</h2>
+      </div>
+      <div class="values-grid">
+        <div><h3>Sustainability</h3><p>We source ethically and package responsibly, because the planet matters as much as your morning cup.</p></div>
+        <div><h3>Community</h3><p>EmotiCup is a gathering place — we host local events, support artists, and champion neighborhood connections.</p></div>
+        <div><h3>Quality</h3><p>No shortcuts. From bean to cup, we maintain the highest standards of excellence in everything we do.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner" style="text-align:center;">
+      <h2 style="margin-bottom:12px;">Meet the Team</h2>
+      <p style="color:var(--muted);margin-bottom:40px;max-width:400px;margin-left:auto;margin-right:auto;">The passionate people behind every cup.</p>
+      <div class="photo photo-video" style="max-width:800px;margin:auto;min-height:280px;">
+        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        PHOTOHERE
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="page-menu" class="page">
+  <section class="section section-muted" style="padding-top:120px;">
+    <div class="section-inner section-header">
+      <span class="section-badge">What We Serve</span>
+      <h1>Our Menu</h1>
+      <p>Carefully curated drinks and bites, crafted with the finest ingredients.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('coffee')">&#9749; Coffee</button>
+        <button class="tab-btn" onclick="switchTab('tea')">&#127861; Tea &amp; Matcha</button>
+        <button class="tab-btn" onclick="switchTab('smoothies')">&#129416; Smoothies &amp; Juices</button>
+        <button class="tab-btn" onclick="switchTab('lemonades')">&#127819; Lemonades</button>
+        <button class="tab-btn" onclick="switchTab('pastry')">&#129360; Pastry &amp; Bakery</button>
+        <button class="tab-btn" onclick="switchTab('cakes')">&#127856; Cakes &amp; Sweets</button>
+      </div>
+      <div class="tab-panel active" id="tab-coffee">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/cba295b23_espresso.jpg" alt="Espresso" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Espresso</h3><span class="menu-price">2,50 &#8364;</span></div><p class="menu-desc">Strong, pure shot of coffee.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/612f563d2_doubleespresso.jpg" alt="Double Espresso" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Double Espresso</h3><span class="menu-price">3,00 &#8364;</span></div><p class="menu-desc">Two shots of rich espresso for extra energy.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/ca1464e70_ristretto.jpg" alt="Ristretto" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Ristretto</h3><span class="menu-price">2,70 &#8364;</span></div><p class="menu-desc">Short, concentrated espresso with intense flavor.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/abd4165c8_lungo.jpg" alt="Lungo" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Lungo</h3><span class="menu-price">2,80 &#8364;</span></div><p class="menu-desc">Long espresso, smooth and less intense.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/a5fa955c8_Americano.jpg" alt="Americano" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Americano</h3><span class="menu-price">3,00 &#8364;</span></div><p class="menu-desc">Espresso diluted with hot water, smooth taste.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/f42139d36_Cappuccino.jpg" alt="Cappuccino" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Cappuccino</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Espresso with steamed milk and foamy top.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/24e1e7ced_Latte.jpg" alt="Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Latte</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Espresso with steamed milk and a thin layer of foam.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/468d8ac2c_FlatWhite.jpg" alt="Flat White" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Flat White</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Espresso with velvety microfoam milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/e41b404ff_mocha.jpg" alt="Mocha" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Mocha</h3><span class="menu-price">4,20 &#8364;</span></div><p class="menu-desc">Espresso with chocolate and steamed milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/8892b17ff_WhiteMocha.jpg" alt="White Mocha" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>White Mocha</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Espresso with white chocolate and milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/9f393a58a_Macchiato.jpg" alt="Macchiato" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Macchiato</h3><span class="menu-price">3,00 &#8364;</span></div><p class="menu-desc">Espresso with a small dollop of milk foam.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/4f7f7d79a_Cortado.jpg" alt="Cortado" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Cortado</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Equal parts espresso and warm milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/674a1155b_IcedCoffee.jpg" alt="Iced Coffee" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Iced Coffee</h3><span class="menu-price">4,00 &#8364;</span></div><p class="menu-desc">Chilled coffee served with ice cubes.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/0a6c6026b_ColdBrew.jpg" alt="Cold Brew" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Cold Brew</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Smooth coffee brewed cold over 12 hours.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/3b9e23145_affogato.jpg" alt="Affogato" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Affogato</h3><span class="menu-price">4,80 &#8364;</span></div><p class="menu-desc">Espresso poured over a scoop of vanilla ice cream.</p></div></div>
+      </div>
+      <div class="tab-panel" id="tab-tea">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/00d5391dc_ClassicMatchaLatte.jpg" alt="Classic Matcha Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Classic Matcha Latte</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Premium Japanese matcha with steamed milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/15e9c42c7_IcedMatchaLatte.jpg" alt="Iced Matcha Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Iced Matcha Latte</h3><span class="menu-price">4,80 &#8364;</span></div><p class="menu-desc">Cold matcha latte, creamy and refreshing.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/309be5011_ChaiLatte.jpg" alt="Chai Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Chai Latte</h3><span class="menu-price">4,20 &#8364;</span></div><p class="menu-desc">Black tea with spices, steamed milk, lightly sweetened.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/b0496fde4_IcedChaiLatte.jpg" alt="Iced Chai Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Iced Chai Latte</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Chilled version of spiced chai latte.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/4deaed01f_GreenTea.jpg" alt="Green Tea" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Green Tea</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Pure antioxidant-rich green tea.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/eee421b94_EarlGrey.jpg" alt="Earl Grey" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Earl Grey</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Black tea with bergamot flavor.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/a34347804_EnglishBreakfast.jpg" alt="English Breakfast" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>English Breakfast</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Strong, classic black tea blend.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/fb5772415_HerbalInfusions.jpg" alt="Herbal Infusions" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Herbal Infusions</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Mint, lavender, hibiscus, or mixed berries.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/722411937_JasmineTea.jpg" alt="Jasmine Tea" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Jasmine Tea</h3><span class="menu-price">3,90 &#8364;</span></div><p class="menu-desc">Green tea infused with jasmine flowers.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/749cebfee_TurmericLatte.jpg" alt="Turmeric Latte" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Turmeric Latte</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Turmeric, spices, and milk for a healthy boost.</p></div></div>
+      </div>
+      <div class="tab-panel" id="tab-smoothies">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/323b00875_BerryBliss.jpg" alt="Berry Bliss" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Berry Bliss</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Blueberries, raspberries, strawberries, yogurt.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/e22ecfe6d_TropicalSunrise.jpg" alt="Tropical Sunrise" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Tropical Sunrise</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Mango, pineapple, orange juice.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/02e181da5_GreenDetox.jpg" alt="Green Detox" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Green Detox</h3><span class="menu-price">5,50 &#8364;</span></div><p class="menu-desc">Spinach, avocado, apple, lime.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/21d846c81_BananaPeanut.jpg" alt="Banana &amp; Peanut" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Banana &amp; Peanut</h3><span class="menu-price">5,20 &#8364;</span></div><p class="menu-desc">Banana, peanut butter, milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/10a8574ad_FreshOrangeJuice.jpg" alt="Fresh Orange Juice" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Fresh Orange Juice</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Freshly squeezed orange juice.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/daa8d27d3_MangoPassionFruit.jpg" alt="Mango &amp; Passion Fruit" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Mango &amp; Passion Fruit</h3><span class="menu-price">5,20 &#8364;</span></div><p class="menu-desc">Sweet tropical blend with creamy texture.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/7ceb3be7e_PineappleCoconut.jpg" alt="Pineapple &amp; Coconut" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Pineapple &amp; Coconut</h3><span class="menu-price">5,50 &#8364;</span></div><p class="menu-desc">Tropical smoothie with coconut milk.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/e19e0cbfa_StrawberryBanana.jpg" alt="Strawberry &amp; Banana" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Strawberry &amp; Banana</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Sweet and creamy mix of fresh fruits.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/58163708c_SpinachApple.jpg" alt="Spinach &amp; Apple" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Spinach &amp; Apple</h3><span class="menu-price">5,50 &#8364;</span></div><p class="menu-desc">Healthy green smoothie with fresh apple.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/5269e5387_BeetrootBerry.jpg" alt="Beetroot &amp; Berry" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Beetroot &amp; Berry</h3><span class="menu-price">5,80 &#8364;</span></div><p class="menu-desc">Energetic mix of beetroot, berries, and banana.</p></div></div>
+      </div>
+      <div class="tab-panel" id="tab-lemonades">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/cbab98506_ClassicLemonade.jpg" alt="Classic Lemonade" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Classic Lemonade</h3><span class="menu-price">4,00 &#8364;</span></div><p class="menu-desc">Fresh lemon juice, sugar, and water.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/6e344c896_StrawberryLemonade.jpg" alt="Strawberry Lemonade" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Strawberry Lemonade</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Fresh strawberries blended with lemonade.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/3a2664109_GingerMintLemonade.jpg" alt="Ginger &amp; Mint Lemonade" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Ginger &amp; Mint Lemonade</h3><span class="menu-price">4,80 &#8364;</span></div><p class="menu-desc">Lemon juice, ginger, fresh mint.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/3b7e9bb4e_BlueberryLemonade.jpg" alt="Blueberry Lemonade" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Blueberry Lemonade</h3><span class="menu-price">4,80 &#8364;</span></div><p class="menu-desc">Lemonade infused with fresh blueberries.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/8056934c9_LavenderLemonade.jpg" alt="Lavender Lemonade" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Lavender Lemonade</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Lemonade with a subtle lavender aroma.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/5b6cce00b_SparklingWater.jpg" alt="Sparkling Water" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Sparkling Water</h3><span class="menu-price">2,50 &#8364;</span></div><p class="menu-desc">Refreshing carbonated water.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/167bc87df_InfusedWater.jpg" alt="Infused Water" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Infused Water</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Cucumber &amp; mint or lemon &amp; berries.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/56b72e69f_IcedHerbalTea.jpg" alt="Iced Herbal Tea" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Iced Herbal Tea</h3><span class="menu-price">4,00 &#8364;</span></div><p class="menu-desc">Chilled herbal tea, naturally flavored.</p></div></div>
+      </div>
+      <div class="tab-panel" id="tab-pastry">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/ce0f2afc0_Croissant.jpg" alt="Croissant" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Croissant</h3><span class="menu-price">2,80 &#8364;</span></div><p class="menu-desc">Classic buttery French pastry.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/d93412c40_PainauChocolat.jpg" alt="Pain au Chocolat" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Pain au Chocolat</h3><span class="menu-price">3,00 &#8364;</span></div><p class="menu-desc">Croissant with dark chocolate inside.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/f09dc59b6_AlmondCroissant.jpg" alt="Almond Croissant" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Almond Croissant</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Croissant with almond paste and flakes.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/162580de1_DanishPastries.jpg" alt="Danish Pastries" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Danish Pastries</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Filled with cream, fruit, or chocolate.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/488325bca_Muffins.jpg" alt="Muffins" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Muffins</h3><span class="menu-price">3,20 &#8364;</span></div><p class="menu-desc">Chocolate, blueberry, or banana.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/eb8f517cf_image.png" alt="Scones" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Scones</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Served with butter and jam.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/97826b31d_image.png" alt="Cinnamon Roll" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Cinnamon Roll</h3><span class="menu-price">3,80 &#8364;</span></div><p class="menu-desc">Sweet roll with cinnamon glaze.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/8cba1f393_Pretzel.jpg" alt="Pretzel" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Pretzel</h3><span class="menu-price">2,80 &#8364;</span></div><p class="menu-desc">Soft, lightly salted, traditional style.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/a375de833_ChocolateChipCookie.jpg" alt="Chocolate Chip Cookie" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Chocolate Chip Cookie</h3><span class="menu-price">2,50 &#8364;</span></div><p class="menu-desc">Classic chewy cookie with chocolate chunks.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/e7afd5d37_BananaBreadSlice.jpg" alt="Banana Bread Slice" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Banana Bread Slice</h3><span class="menu-price">3,50 &#8364;</span></div><p class="menu-desc">Moist banana bread with a hint of cinnamon.</p></div></div>
+      </div>
+      <div class="tab-panel" id="tab-cakes">
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/8c802a5be_Cheesecake.jpg" alt="Cheesecake" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Cheesecake</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Classic creamy cheesecake, plain or fruity topping.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/cb3edea07_ChocolateBrownie.jpg" alt="Chocolate Brownie" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Chocolate Brownie</h3><span class="menu-price">4,50 &#8364;</span></div><p class="menu-desc">Rich chocolate brownie, fudgy inside.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/69d170b54_CarrotCake.jpg" alt="Carrot Cake" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Carrot Cake</h3><span class="menu-price">4,80 &#8364;</span></div><p class="menu-desc">Spiced cake with cream cheese frosting.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/fe1f7469f_ApplePie.jpg" alt="Apple Pie" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Apple Pie</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Traditional apple pie served warm.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/bb4b574e4_Tiramisu.jpg" alt="Tiramisu" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Tiramisu</h3><span class="menu-price">5,50 &#8364;</span></div><p class="menu-desc">Classic Italian dessert with espresso and cocoa.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/1565e5fdb_LemonTart.jpg" alt="Lemon Tart" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Lemon Tart</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Tangy lemon custard in buttery crust.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/295bdac8e_RedVelvetCake.jpg" alt="Red Velvet Cake" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Red Velvet Cake</h3><span class="menu-price">5,50 &#8364;</span></div><p class="menu-desc">Moist red cake with cream cheese frosting.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/9e8f19e75_ChocolateLavaCake.jpg" alt="Chocolate Lava Cake" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Chocolate Lava Cake</h3><span class="menu-price">5,80 &#8364;</span></div><p class="menu-desc">Warm chocolate cake with liquid center.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/424aad151_FruitTart.jpg" alt="Fruit Tart" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Fruit Tart</h3><span class="menu-price">5,20 &#8364;</span></div><p class="menu-desc">Seasonal fruits on pastry cream in tart shell.</p></div></div>
+        <div class="menu-card"><img src="https://media.base44.com/images/public/69d8173d10ad4076d0e5c6fd/b2df8e9ee_PannaCotta.jpg" alt="Panna Cotta" style="width:100%;height:160px;object-fit:cover;border-radius:10px 10px 0 0;"><div class="menu-card-body"><div class="menu-card-top"><h3>Panna Cotta</h3><span class="menu-price">5,00 &#8364;</span></div><p class="menu-desc">Italian creamy dessert with berry sauce.</p></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="page-services" class="page">
+  <section class="section section-muted" style="padding-top:120px;">
+    <div class="section-inner section-header">
+      <span class="section-badge">What We Offer</span>
+      <h1>Our Services</h1>
+      <p>Beyond coffee — discover everything EmotiCup has to offer.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="grid-cards">
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg></div><h3>Daily Specialty Coffee</h3><p>Fresh roasted specialty coffee served all day, from single origins to signature blends crafted by our expert baristas.</p></div>
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Private Events</h3><p>Host your next gathering in our cozy private space. We offer custom menus and setups for groups of up to 40.</p></div>
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></div><h3>Coffee Workshops</h3><p>Learn the art of coffee making with our hands-on workshops. From latte art to home brewing techniques.</p></div>
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><h3>Catering</h3><p>Bring EmotiCup to your office or event. Full-service coffee catering with professional baristas on-site.</p></div>
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3>Live Music Evenings</h3><p>Every Friday and Saturday, enjoy acoustic performances from local artists in our intimate venue.</p></div>
+        <div class="service-card"><div class="service-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div><h3>Gift Cards &amp; Merch</h3><p>Share the EmotiCup experience. Gift cards available in any denomination, plus branded merchandise.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section section-primary">
+    <div class="section-inner">
+      <div class="grid-2">
+        <div>
+          <h2 style="font-size:1.9rem;margin-bottom:16px;">Ready to Book a Service?</h2>
+          <p style="font-size:.88rem;opacity:.8;line-height:1.8;margin-bottom:24px;">Whether it's a private event, a catering order, or a workshop for your team, we'd love to help make it special.</p>
+          <button class="btn btn-outline" style="color:var(--primary-fg);border-color:rgba(255,255,255,.3);" onclick="navigate('contact')">Get in Touch &#8594;</button>
+        </div>
+        <div style="min-height:220px;border-radius:10px;overflow:hidden;">
+          <img src="https://media.base44.com/images/public/69d81e9bfa2e5a97264fc8b4/f651caa86_image.png" alt="Our Space" style="width:100%;height:100%;min-height:220px;object-fit:cover;display:block;border-radius:10px;" />
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="page-contact" class="page">
+  <section class="section section-muted" style="padding-top:120px;">
+    <div class="section-inner section-header">
+      <span class="section-badge">Say Hello</span>
+      <h1>Contact Us</h1>
+      <p>We'd love to hear from you. Drop us a line and we'll get back to you shortly.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div>
+          <h2 style="font-size:1.6rem;margin-bottom:32px;">Get in Touch</h2>
+          <div class="info-item"><div class="info-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div><p class="info-label">Address</p><p class="info-val">Bloemgracht 49, 1016 KD Amsterdam, Netherlands</p></div></div>
+          <div class="info-item"><div class="info-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.29h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><p class="info-label">Phone</p><p class="info-val">0760433880</p></div></div>
+          <div class="info-item"><div class="info-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><div><p class="info-label">Email</p><p class="info-val">emoticupsrl@gmail.com</p></div></div>
+          <div class="info-item"><div class="info-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><p class="info-label">Hours</p><p class="info-val">Mon&#8211;Fri: 7am&#8211;8pm &#183; Sat&#8211;Sun: 8am&#8211;9pm</p></div></div>
+        </div>
+        <div>
+          <div id="contactForm">
+            <div class="contact-form">
+              <h2>Send a Message</h2>
+              <div class="form-group"><label>Name</label><input type="text" id="cName" placeholder="Your name" /></div>
+              <div class="form-group"><label>Email</label><input type="email" id="cEmail" placeholder="your@email.com" /></div>
+              <div class="form-group"><label>Message</label><textarea id="cMsg" placeholder="How can we help?"></textarea></div>
+              <button class="btn btn-accent" style="width:100%;justify-content:center;" onclick="submitContact()">Send Message</button>
+            </div>
+          </div>
+          <div id="contactSuccess" class="success-box" style="display:none;">
+            <svg width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h3>Thank You!</h3>
+            <p>Your message has been sent. We'll get back to you as soon as possible.</p>
+            <button class="btn btn-outline" style="margin-top:20px;" onclick="resetContact()">Send Another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
+        EmotiCup
+      </div>
+      <p>Crafting emotions, one cup at a time. Every sip tells a story at EmotiCup.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#" onclick="navigate('home')">Home</a>
+      <a href="#" onclick="navigate('about')">About</a>
+      <a href="#" onclick="navigate('menu')">Menu</a>
+      <a href="#" onclick="navigate('services')">Services</a>
+      <a href="#" onclick="navigate('contact')">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Get in Touch</h4>
+      <div class="footer-contact-item"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Bloemgracht 49, 1016 KD Amsterdam</div>
+      <div class="footer-contact-item"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.29h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 0760433880</div>
+      <div class="footer-contact-item"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> emoticupsrl@gmail.com</div>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:auto;">
+    <div class="footer-bottom">&#169; 2026 EmotiCup. All rights reserved.</div>
+  </div>
+</footer>
+
+<div class="overlay" id="orderOverlay" onclick="closeOrderOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrder()">&#10005;</button>
+    <div id="orderForm">
+      <h2>Place Your Order</h2>
+      <p class="modal-sub">Choose your drinks and we'll have them ready for pickup.</p>
+      <div class="two-col">
+        <div class="form-group"><label>Name *</label><input type="text" id="oName" placeholder="Your name" /></div>
+        <div class="form-group"><label>Email</label><input type="email" id="oEmail" placeholder="your@email.com" /></div>
+      </div>
+      <div id="drinkRows"></div>
+      <button class="add-drink-btn" onclick="addDrinkRow()" style="margin-bottom:16px;">+ Add another drink</button>
+      <div class="form-group"><label>Special Instructions</label><textarea id="oNotes" placeholder="Any special requests..." rows="2" style="min-height:60px;"></textarea></div>
+      <div class="order-total">
+        <div><p class="total-label">Total</p><p class="total-price" id="orderTotal">$0.00</p></div>
+        <button class="btn btn-accent" onclick="submitOrder()">Place Order</button>
+      </div>
+    </div>
+    <div id="orderSuccess" class="success-modal" style="display:none;">
+      <svg width="60" height="60" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <h3>Order Placed!</h3>
+      <p id="orderSuccessMsg">Your order is being prepared!</p>
+      <button class="btn btn-accent" onclick="closeOrder()" style="margin-top:16px;">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pages = ['home','about','menu','services','contact'];
+  function navigate(page) {
+    pages.forEach(p => {
+      document.getElementById('page-'+p).classList.toggle('active', p === page);
+      const navEl = document.getElementById('nav-'+p);
+      if (navEl) navEl.classList.toggle('active', p === page);
+    });
+    window.scrollTo(0, 0);
+    return false;
+  }
+  function toggleMobile() { document.getElementById('mobileMenu').classList.toggle('open'); }
+  function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+  const tabs = { coffee: 'tab-coffee', tea: 'tab-tea', smoothies: 'tab-smoothies', lemonades: 'tab-lemonades', pastry: 'tab-pastry', cakes: 'tab-cakes' };
+  function switchTab(key) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    Object.values(tabs).forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(tabs[key]).classList.add('active');
+  }
+  function submitContact() {
+    const n = document.getElementById('cName').value.trim();
+    const e = document.getElementById('cEmail').value.trim();
+    const m = document.getElementById('cMsg').value.trim();
+    if (!n || !e || !m) { alert('Please fill in all fields.'); return; }
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+  }
+  function resetContact() {
+    document.getElementById('cName').value = '';
+    document.getElementById('cEmail').value = '';
+    document.getElementById('cMsg').value = '';
+    document.getElementById('contactForm').style.display = 'block';
+    document.getElementById('contactSuccess').style.display = 'none';
+  }
+  const DRINKS = [
+    {name:'Espresso',price:3.5},{name:'Americano',price:4},{name:'Cappuccino',price:5},
+    {name:'Latte',price:5.5},{name:'Mocha',price:6},{name:'Hot Chocolate',price:4.5},
+    {name:'Flat White',price:5},{name:'Macchiato',price:4},{name:'Chai Latte',price:5.5},
+    {name:'Cortado',price:4.5},{name:'Turkish Coffee',price:4},{name:'Caramel Latte',price:6},
+    {name:'Cold Brew',price:5},{name:'Iced Latte',price:5.5},{name:'Matcha Latte',price:6},
+    {name:'Iced Mocha',price:6.5},{name:'Lemonade',price:4},{name:'Iced Americano',price:4.5},
+    {name:'Iced Chai',price:5.5},{name:'Frappe',price:6},{name:'Mango Smoothie',price:6.5},
+    {name:'Iced Caramel Macchiato',price:6},{name:'Berry Lemonade',price:5},{name:'Coconut Cold Brew',price:5.5}
+  ];
+  let drinkRows = [];
+  function openOrder() {
+    drinkRows = [];
+    document.getElementById('oName').value = '';
+    document.getElementById('oEmail').value = '';
+    document.getElementById('oNotes').value = '';
+    document.getElementById('orderForm').style.display = 'block';
+    document.getElementById('orderSuccess').style.display = 'none';
+    document.getElementById('drinkRows').innerHTML = '';
+    addDrinkRow();
+    document.getElementById('orderOverlay').classList.add('open');
+  }
+  function closeOrder() { document.getElementById('orderOverlay').classList.remove('open'); }
+  function closeOrderOutside(e) { if (e.target === document.getElementById('orderOverlay')) closeOrder(); }
+  function addDrinkRow() {
+    const id = Date.now();
+    drinkRows.push(id);
+    const container = document.getElementById('drinkRows');
+    const row = document.createElement('div');
+    row.className = 'order-row';
+    row.id = 'row-'+id;
+    row.innerHTML = `
+      <div class="order-field" style="flex:1;min-width:140px;">
+        <label>Drink</label>
+        <select onchange="updateTotal()" id="drink-${id}">
+          <option value="">Select...</option>
+          ${DRINKS.map(d=>`<option value="${d.price}">${d.name} — $${d.price.toFixed(2)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="order-field">
+        <label>Size</label>
+        <select onchange="updateTotal()" id="size-${id}">
+          <option value="1">Medium</option>
+          <option value="0.8">Small</option>
+          <option value="1.3">Large</option>
+        </select>
+      </div>
+      <div class="order-field">
+        <label>Qty</label>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${id},-1)">&#8722;</button>
+          <span id="qty-${id}" style="min-width:18px;text-align:center;">1</span>
+          <button class="qty-btn" onclick="changeQty(${id},1)">+</button>
+        </div>
+      </div>
+      ${drinkRows.length > 1 ? `<button class="remove-btn" onclick="removeDrinkRow(${id})">Remove</button>` : ''}
+    `;
+    container.appendChild(row);
+    updateTotal();
+  }
+  function removeDrinkRow(id) {
+    drinkRows = drinkRows.filter(r => r !== id);
+    document.getElementById('row-'+id).remove();
+    updateTotal();
+  }
+  function changeQty(id, delta) {
+    const el = document.getElementById('qty-'+id);
+    el.textContent = Math.max(1, parseInt(el.textContent) + delta);
+    updateTotal();
+  }
+  function updateTotal() {
+    let total = 0;
+    drinkRows.forEach(id => {
+      const d = document.getElementById('drink-'+id);
+      const s = document.getElementById('size-'+id);
+      const q = document.getElementById('qty-'+id);
+      if (!d || !d.value) return;
+      total += parseFloat(d.value) * parseFloat(s.value) * parseInt(q.textContent);
+    });
+    document.getElementById('orderTotal').textContent = '$' + total.toFixed(2);
+  }
+  function submitOrder() {
+    const name = document.getElementById('oName').value.trim();
+    const hasItems = drinkRows.some(id => { const el = document.getElementById('drink-'+id); return el && el.value; });
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!hasItems) { alert('Please select at least one drink.'); return; }
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('orderSuccessMsg').textContent = 'Thank you, ' + name + '! Your order is being prepared.';
+    document.getElementById('orderSuccess').style.display = 'block';
+  }
+</script>
+</body>
+</html>
